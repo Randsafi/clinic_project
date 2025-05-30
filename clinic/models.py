@@ -14,6 +14,9 @@ class Doctor(models.Model):
     name = models.CharField(max_length=100)
     img = models.ImageField(upload_to='doctors/', blank=True, null=True)  # حطيت upload_to
     specialization = models.CharField(max_length=50)
+    facebook = models.CharField(max_length=100 , blank=True , null=True)
+    X = models.CharField(max_length=100 , blank=True , null=True)
+    instagram = models.CharField(max_length=100 , blank=True , null=True)
 
     def __str__(self):
         return self.name

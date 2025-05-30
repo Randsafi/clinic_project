@@ -6,6 +6,8 @@ from .views import AppointmentListCreate, AppointmentDetail
 urlpatterns = [
     path('', views.index,name='index'),
     path('team/', views.team,name='team'),
+    path('team/', views.about,name='about'),
+    path('team/', views.contect,name='contect'),
     path('appointments/', views.appointment_view,name='appointments'),
     path('appointments-page/', views.appointments_view,name='appointments_page'),
     path('appointments/', AppointmentListCreate.as_view()),

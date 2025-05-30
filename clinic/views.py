@@ -20,7 +20,13 @@ def index(request):
 
 def team(request):
     doctors = Doctor.objects.all()
-    return render(request,'temp/Team.html' , {'doctors':doctors})    
+    return render(request,'temp/Team.html' , {'doctors':doctors})  
+
+def about(request):
+    return render(request, 'temp/about.html')
+
+def contect(request):
+    return render(request, 'temp/about.html')
 
 def appointment_view(request):
     if request.method == 'POST':
