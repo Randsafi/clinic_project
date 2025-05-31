@@ -1,15 +1,15 @@
-
-
+{% extends "base.html" %}
+{% load static %}
 <body>
-
+{% block content %}
     <!-- About Start -->
     <div class="container-xxl py-5">
         <div class="container">
             <div class="row g-5">
                 <div class="col-lg-6 wow fadeIn" data-wow-delay="0.1s">
                     <div class="d-flex flex-column">
-                        <img class="img-fluid rounded w-75 align-self-end" src="img/about-1.jpg" alt="">
-                        <img class="img-fluid rounded w-50 bg-white pt-3 pe-3" src="img/about-2.jpg" alt="" style="margin-top: -25%;">
+                        <img class="img-fluid rounded w-75 align-self-end" src="{% static "img/about-1.jpg" %}" alt="">
+                        <img class="img-fluid rounded w-50 bg-white pt-3 pe-3" src="{% static "img/about-2.jpg" %}" alt="" style="margin-top: -25%;">
                     </div>
                 </div>
                 <div class="col-lg-6 wow fadeIn" data-wow-delay="0.5s">
@@ -87,14 +87,13 @@
                 </div>
                 <div class="col-lg-6 pe-lg-0 wow fadeIn" data-wow-delay="0.5s" style="min-height: 400px;">
                     <div class="position-relative h-100">
-                        <img class="position-absolute img-fluid w-100 h-100" src="img/feature.jpg" style="object-fit: cover;" alt="">
+                        <img class="position-absolute img-fluid w-100 h-100" src="{% static "img/feature.jpg" %}" style="object-fit: cover;" alt="">
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <!-- Feature End -->
-
 
     <!-- Team Start -->
     <div class="container-xxl py-5">
@@ -107,7 +106,7 @@
                 <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
                     <div class="team-item position-relative rounded overflow-hidden">
                         <div class="overflow-hidden">
-                            <img class="img-fluid" src="img/team-1.jpg" alt="">
+                            <img class="img-fluid" src="{% static "img/team-1.jpg" %}" alt="">
                         </div>
                         <div class="team-text bg-light text-center p-4">
                             <h5>Doctor Name</h5>
@@ -123,7 +122,7 @@
                 <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
                     <div class="team-item position-relative rounded overflow-hidden">
                         <div class="overflow-hidden">
-                            <img class="img-fluid" src="img/team-2.jpg" alt="">
+                            <img class="img-fluid" src="{% static "img/team-2.jpg" %}" alt="">
                         </div>
                         <div class="team-text bg-light text-center p-4">
                             <h5>Doctor Name</h5>
@@ -139,7 +138,7 @@
                 <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
                     <div class="team-item position-relative rounded overflow-hidden">
                         <div class="overflow-hidden">
-                            <img class="img-fluid" src="img/team-3.jpg" alt="">
+                            <img class="img-fluid" src="{% static "img/team-3.jpg" %}" alt="">
                         </div>
                         <div class="team-text bg-light text-center p-4">
                             <h5>Doctor Name</h5>
@@ -155,7 +154,7 @@
                 <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.7s">
                     <div class="team-item position-relative rounded overflow-hidden">
                         <div class="overflow-hidden">
-                            <img class="img-fluid" src="img/team-4.jpg" alt="">
+                            <img class="img-fluid" src="{% static "img/team-4.jpg" %}" alt="">
                         </div>
                         <div class="team-text bg-light text-center p-4">
                             <h5>Doctor Name</h5>
@@ -173,7 +172,5 @@
     </div>
     <!-- Team End -->
         
-
+{% endblock content %}
 </body>
-
-</html>
