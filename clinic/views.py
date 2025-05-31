@@ -1,8 +1,6 @@
 from django.contrib import messages
 from django.shortcuts import render,redirect
-from rest_framework import generics
 from .models import Appointment,Patient ,Doctor
-from .serializers import AppointmentSerializer
 from .forms import AppointmentForm
 
 
@@ -56,14 +54,6 @@ def appointment_view(request):
 
     return render(request, 'temp/appointment.html', {'form': form})
 
-class AppointmentListCreate(generics.ListCreateAPIView):
-    queryset = Appointment.objects.all()
-    serializer_class = AppointmentSerializer
-
-class AppointmentDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Appointment.objects.all()
-    serializer_class = AppointmentSerializer
-
-
-def appointments_view(request):
-    return render(request, 'test.html')
+def service(request):
+    
+    return render(request,'temp/service.html')

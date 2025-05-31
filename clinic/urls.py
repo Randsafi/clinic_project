@@ -1,7 +1,6 @@
 # clinic/urls.py
 from django.urls import path
 from . import views
-from .views import AppointmentListCreate, AppointmentDetail
 
 urlpatterns = [
     path('', views.index,name='index'),
@@ -9,7 +8,5 @@ urlpatterns = [
     path('about/', views.about,name='about'),
     path('contect/', views.contect,name='contect'),
     path('appointments/', views.appointment_view,name='appointments'),
-    path('appointments-page/', views.appointments_view,name='appointments_page'),
-    path('appointments/', AppointmentListCreate.as_view()),
-    path('appointments/<int:pk>/', AppointmentDetail.as_view()),
+    path('service/', views.service,name='service'),
 ]

@@ -1,7 +1,7 @@
 # clinic/serializers.py
 
 from rest_framework import serializers
-from .models import Appointment, Patient, Doctor
+from clinic.models import Appointment, Patient, Doctor
 
 # أول شي: Serializer للمريض
 class PatientSerializer(serializers.ModelSerializer):
