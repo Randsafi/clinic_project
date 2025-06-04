@@ -1,5 +1,5 @@
 from django import forms
-from .models import Doctor
+from .models import Doctor ,Patient
 
 class AppointmentForm(forms.Form):
     name = forms.CharField(
@@ -51,3 +51,13 @@ class AppointmentForm(forms.Form):
             'placeholder': 'Describe your problem'
         })
     )
+
+class DoctorForm(forms.Form):
+    class Meta:
+        model = Doctor
+        fields = ['img','name' , 'specialization','is_experience','phone','facebook','X','instagram']
+
+class PatientForm(forms.Form):
+    class Meta:
+        model = Patient
+        fields = ['name' , 'email','phone']

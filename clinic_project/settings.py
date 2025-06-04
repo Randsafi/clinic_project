@@ -40,9 +40,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'clinic', 
     'api_app',
+    'accounts',
     'rest_framework',  
     'corsheaders',
 ]
+
+AUTH_USER_MODEL = 'accounts.CustomUser'
+
+LOGIN_REDIRECT_URL = 'index'   # الصفحة التي يُعاد توجيه المستخدم لها بعد تسجيل الدخول
+LOGOUT_REDIRECT_URL = 'login' # الصفحة التي يُعاد توجيه المستخدم لها بعد تسجيل الخروج
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [

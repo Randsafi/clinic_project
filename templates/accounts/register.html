@@ -1,0 +1,104 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Klinik - Clinic Website Template</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <!-- Favicon -->
+    <link href="{% static 'img/favicon.ico' %}" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500&family=Roboto:wght@500;700;900&display=swap" rel="stylesheet"> 
+
+    <!-- Icon Font Stylesheet -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="{% static 'lib/animate/animate.min.css' %}" rel="stylesheet">
+    <link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+    <link href="{% static 'lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css' %}" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/css/tempusdominus-bootstrap-4.min.css" />
+
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="{% static 'css/bootstrap.min.css'%}" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="{% static 'css/style.css'%}" rel="stylesheet">
+</head>
+
+<body class="d-flex justify-content-center align-items-center vh-100 bg-light">
+    
+    <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.5s">
+        <div class="bg-white rounded h-100 d-flex align-items-center p-5 shadow">
+            <form method="post" action="" class="w-100">
+                <h2 class="text-center mb-4">Create Account</h2>
+                {% csrf_token %}
+                {% if form.errors %}
+                  <div class="alert alert-danger">
+                    <ul>
+                      {% for field in form %}
+                        {% for error in field.errors %}
+                          <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                        {% endfor %}
+                      {% endfor %}
+                      {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                {% endif %}
+
+                <div class="row g-3">
+                    <div class="col-12 col-sm-12">
+                        {{ form.username.label_tag }} {{ form.username }}
+                    </div>
+                    <div class="col-12 col-sm-12">
+                        {{ form.password1.label_tag }} {{ form.password1 }}
+                    </div>
+                    <div class="col-12 col-sm-12">
+                        {{ form.password2.label_tag }} {{ form.password2 }}
+                    </div>
+                    <div class="col-12 col-sm-12">
+                      {{ form.user_type.label_tag }}
+                      {{ form.user_type }}
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-primary w-100 py-3" type="submit"> Next </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div> 
+
+<script>
+    const form = document.getElementById('userTypeForm');
+    const selector = document.getElementById('user_type');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();  // منع الإرسال التقليدي
+
+        const userType = selector.value;
+        if (userType === "doctor" || userType === "patient") {
+            window.location.href = `/accounts/register2/${userType}/`;
+        } else {
+            alert("يرجى اختيار نوع الحساب.");
+        }
+    });
+</script>
+<!-- JavaScript Libraries -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+ 
+    <!-- Template Javascript -->
+    <script src="{% static 'js/main.js'%}"></script>
+</body>
