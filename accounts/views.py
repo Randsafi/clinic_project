@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from .forms import CustomUserCreationForm
 from django.contrib.auth import login
-from clinic.forms import DoctorForm,PatientForm
+from .forms import DoctorForm,PatientForm
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
@@ -49,4 +49,4 @@ def register2(request,user_type):
     else:
         form = DoctorForm() if user_type == 'doctor' else PatientForm()       
 
-    return render(request , 'accounts/register2.html' , {'form' :form})
+    return render(request , 'accounts/register2.html' , {'form' :form , 'user_type': user_type})

@@ -52,12 +52,3 @@ class AppointmentForm(forms.Form):
         })
     )
 
-class DoctorForm(forms.Form):
-    class Meta:
-        model = Doctor
-        fields = ['img','name' , 'specialization','is_experience','phone','facebook','X','instagram']
-
-class PatientForm(forms.Form):
-    class Meta:
-        model = Patient
-        fields = ['name' , 'email','phone']
