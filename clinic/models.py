@@ -33,11 +33,11 @@ class Doctor(models.Model):
     instagram = models.CharField(max_length=100 , blank=True , null=True)
 
     def __str__(self):
-        return self.name
+        return self.firstname
 
 class Appointment(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='appointments')
     date = models.DateTimeField()  # هنا التاريخ والوقت مع بعض، أنسب من فصلهم
     problem_description = models.TextField()
     status = models.CharField(

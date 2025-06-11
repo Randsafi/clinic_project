@@ -8,3 +8,11 @@ class CustomUser(AbstractUser):
         ('staff', 'Staff'),
     )
     user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES)
+
+    def __str__(self):
+        if self.user_type == 'doctor':
+            if self.first_name and self.last_name:
+                return f"Dr. {self.first_name} {self.last_name}"
+            return f"Dr. {self.username}"
+        return self.username
+

@@ -5,6 +5,9 @@ from .forms import DoctorForm,PatientForm
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
+def custom_404_view(request, exception):
+    return render(request, 'parts1/404.html', status=404)
+
 # Create your views here.
 def register(request):
     if request.method == 'POST':
@@ -29,7 +32,7 @@ def register2(request,user_type):
         if user_type == 'doctor' :
             form = DoctorForm(request.POST)
             if form.is_valid():
-                doctor = form.save()
+                doctor = form.save(commit=False)
                 doctor.user = user
                 doctor.save()
                 login(request, user)
@@ -38,7 +41,7 @@ def register2(request,user_type):
         elif user_type == "patient":
             form = PatientForm(request.POST)
             if form.is_valid():
-                patient = form.save()
+                patient = form.save(commit=False)
                 patient.user = user
                 patient.save()
                 login(request, user)

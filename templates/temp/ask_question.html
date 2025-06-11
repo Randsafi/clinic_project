@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="row g-5">
+            <!-- المعلومات الجانبية -->
+            <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s">
+                <p class="d-inline-block border rounded-pill py-1 px-4">Question</p>
+                <h1 class="mb-4">Make An Appointment To Visit Our Doctor</h1>
+                <p class="mb-4">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit...</p>
+
+                <div class="bg-light rounded d-flex align-items-center p-5 mb-4">
+                    <div class="d-flex flex-shrink-0 align-items-center justify-content-center rounded-circle bg-white"
+                         style="width: 55px; height: 55px;">
+                        <i class="fa fa-phone-alt text-primary"></i>
+                    </div>
+                    <div class="ms-4">
+                        <p class="mb-2">Call Us Now</p>
+                        <h5 class="mb-0">+012 345 6789</h5>
+                    </div>
+                </div>
+
+                <div class="bg-light rounded d-flex align-items-center p-5">
+                    <div class="d-flex flex-shrink-0 align-items-center justify-content-center rounded-circle bg-white"
+                         style="width: 55px; height: 55px;">
+                        <i class="fa fa-envelope-open text-primary"></i>
+                    </div>
+                    <div class="ms-4">
+                        <p class="mb-2">Mail Us Now</p>
+                        <h5 class="mb-0">info@example.com</h5>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.5s">
+                <div class="bg-light rounded h-100 d-flex align-items-center p-5">
+                        <form method="post" action="" class="w-100">
+                            <h2 class="text-center mb-4"> ask your doctor </h2>
+                            {% csrf_token %}
+                            <div class="row g-3 justify-content-center">
+                                <div class="col-12 col-sm-10 mx-auto">
+                                    {{ form.as_p }}
+                                </div>
+                            </div>
+                            <div class="col-12 mt-3">
+                                <button class="btn btn-primary w-100 py-3" type="submit"> ask </button>
+                            </div>
+                        </form> 
+                </div>
+            </div>
+            {% for question in questions %}
+              <div class="card mb-3">
+                <div class="card-body">
+                  <p><strong>You asked:</strong> {{ question.question_text }}</p>
+                  {% if question.answer_text %}
+                    <p class="text-success"><strong>Doctor replied:</strong> {{ question.answer_text }}</p>
+                  {% else %}
+                    <p class="text-warning">Your doctor hasn’t replied yet.</p>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}
