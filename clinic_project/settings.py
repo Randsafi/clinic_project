@@ -43,11 +43,13 @@ INSTALLED_APPS = [
     'Question',
     'rest_framework',  
     'api_app',
+    'teste',
     'corsheaders',
 ]
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
+LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'index'   # الصفحة التي يُعاد توجيه المستخدم لها بعد تسجيل الدخول
 LOGOUT_REDIRECT_URL = 'login' # الصفحة التي يُعاد توجيه المستخدم لها بعد تسجيل الخروج
 handler404 = 'accounts.views.custom_404_view'
@@ -88,9 +90,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-        
-                'myapp.context_processors.unread_notifications',
-                'myapp.context_processors.site_info',
+
+                'Question.context_processors.notifications_processor',
+               # 'Question.context_processors.site_info',
             ],
         },
     },

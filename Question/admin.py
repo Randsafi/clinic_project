@@ -6,3 +6,4 @@ from .models import Question
 class QuestionAdmin(admin.ModelAdmin):
     list_display = ['patient', 'doctor', 'timestamp', 'answer_text']
     search_fields = ['question_text', 'answer_text']
+    

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Patient  # إذا كنت تستخدمه فعلاً
+from .models import Patient,Doctor  # إذا كنت تستخدمه فعلاً
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
@@ -29,7 +29,7 @@ class AppointmentForm(forms.Form):
     )
 
     doctor = forms.ModelChoiceField(
-        queryset=User.objects.filter(user_type='doctor'),
+        queryset=Doctor.objects.all(),
         widget=forms.Select(attrs={
             'class': 'form-select border-0',
             'style': 'height: 50px;'
@@ -37,13 +37,17 @@ class AppointmentForm(forms.Form):
     )
 
     datetime = forms.DateTimeField(
-        input_formats=['%Y-%m-%d %H:%M'],
-        widget=forms.TextInput(attrs={
-            'class': 'form-control border-0 datetimepicker-input',
-            'placeholder': 'Choose Date',
-            'data-target': '#date',
-            'data-toggle': 'datetimepicker',
-            'style': 'height: 55px;'
+    input_formats=[
+        '%Y-%m-%d %H:%M',
+        '%Y-%m-%dT%H:%M',
+        '%m/%d/%Y %I:%M %p',  # <-- هذا هو التنسيق الحالي
+    ],
+    widget=forms.TextInput(attrs={
+        'class': 'form-control border-0 datetimepicker-input',
+        'placeholder': 'Choose Date',
+        'data-target': '#date',
+        'data-toggle': 'datetimepicker',
+        'style': 'height: 55px;',
         })
     )
 

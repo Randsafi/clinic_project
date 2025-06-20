@@ -89,7 +89,7 @@
                            </div>    
                     {% elif user_type == 'patient' %}
                             <div class="col-12 col-sm-12">
-                               {{ form.firstname.label_tag }} {{ firstname.img }}
+                               {{ form.firstname.label_tag }} {{ form.firstname }}
                            </div>
                            <div class="col-12 col-sm-12">
                                {{ form.lastname.label_tag }} {{ form.lastname }}
@@ -99,6 +99,9 @@
                            </div>
                            <div class="col-12 col-sm-12">
                                {{ form.phone.label_tag }} {{ form.phone }}
+                           </div>
+                           <div class="col-12 col-sm-12">
+                               {{ form.medical_history.label_tag }} {{ form.medical_history }}
                            </div>
                       {% endif %}
                     <div class="col-12">

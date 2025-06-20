@@ -1,9 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-User = get_user_model()
 
-# استدعِ الدالة ()get_user_model لتحصل على النموذج
-User = get_user_model()  # لاحظ الأقواس هنا ()
+User = get_user_model()  
 
 class Question(models.Model):
     patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='questions')

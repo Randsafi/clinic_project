@@ -35,6 +35,7 @@ urlpatterns = [
     path('home', home, name='home'),
     path('account/', include('accounts.urls')),
     path('', include('clinic.urls')),
+    path('teste/', include('teste.urls')),
     path('question/', include('Question.urls')),
     path('api/', include('api_app.urls')),
 ] +static(settings.STATIC_URL, document_root = settings.STATIC_ROOT)\

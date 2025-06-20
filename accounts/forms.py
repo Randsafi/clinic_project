@@ -9,7 +9,10 @@ class CustomUserCreationForm(UserCreationForm):
         fields = (
             'username' , 'email', 'user_type', 'password1' , 'password2'
         )
-
+        help_texts={
+            'username': 'Enter a 12-letter name'
+        }
+        
 class DoctorForm(forms.ModelForm):
     class Meta:
         model = Doctor
@@ -18,4 +21,8 @@ class DoctorForm(forms.ModelForm):
 class PatientForm(forms.ModelForm):
     class Meta:
         model = Patient
-        fields = ['firstname','lastname' , 'email','phone']
+        fields = ['firstname','lastname' , 'email','phone','medical_history']
+        widgets ={
+            'medical_history': forms.Textarea(attrs={
+                'placeholder': 'Do you have a medical history?'})
+        }

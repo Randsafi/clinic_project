@@ -5,9 +5,10 @@ class CustomUser(AbstractUser):
     USER_TYPE_CHOICES = (
         ('doctor', 'Doctor'),
         ('patient', 'Patient'),
-        ('staff', 'Staff'),
+        ('receptionist', 'receptionist'),
+        ('assistant', 'assistant'),
     )
-    user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES)
+    user_type = models.CharField(max_length=12, choices=USER_TYPE_CHOICES)
 
     def __str__(self):
         if self.user_type == 'doctor':

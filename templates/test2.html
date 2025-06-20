@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>قائمة الأشخاص</title>
+</head>
+<body>
+    <h1>الأشخاص:</h1>
+    <ul>
+        {% for person in people %}
+            <li>{{ person.name }} ({{ person.age }} سنة)</li>
+        {% empty %}
+            <li>لا يوجد أشخاص لعرضهم.</li>
+        {% endfor %}
+    </ul>
+
+    <p><a href="{% url 'adults' %}">عرض البالغين</a></p>
+    <p><a href="{% url 'teens' %}">عرض المراهقين</a></p>
+</body>
+</html>

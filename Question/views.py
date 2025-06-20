@@ -1,21 +1,24 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from .forms import QuestionForm
-from .models import Question,Notification
 from django.contrib.auth.decorators import login_required
 from urllib.parse import quote
 
+from .forms import QuestionForm
+from .models import Question, Notification
+
+
 @login_required
 def ask_doctor(request):
-    questions=Question.objects.all()
+    questions = Question.objects.all()
+
     if request.method == 'POST':
         form = QuestionForm(request.POST)
         if form.is_valid():
             question = form.save(commit=False)
             question.patient = request.user
             question.save()
-            doctor = question.doctor
 
+            doctor = question.doctor
             if hasattr(doctor, 'phone') and doctor.phone:
                 message = f"New question from {request.user.username}:\n\n{question.question_text}"
                 encoded_message = quote(message)
@@ -29,38 +32,40 @@ def ask_doctor(request):
                 return redirect('ask_doctor')
     else:
         form = QuestionForm()
-    
-    return render(request, 'temp/ask_question.html', {
-        'form': form ,
-        'questions':questions})
 
-def answer_question(request , pk):
-    try:
-        question=Question.objects.get(pk = pk)
-    except Question.DoesNotExist:
-        return render(request, 'parts1/404.html' , status=404)
-    
+    return render(request, 'temp/ask_question.html', {
+        'form': form,
+        'questions': questions
+    })
+
+
+@login_required
+def answer_question(request, pk):
+    question = get_object_or_404(Question, pk=pk)
+
     if request.method == 'POST':
-        answer = request.post.get('answer')
+        answer = request.POST.get('answer')
         question.answer_text = answer
         question.save()
 
+        # إنشاء إشعار للمريض
         Notification.objects.create(
-            user = question.patient ,
-            message=f"Dr. {question.doctor.first_name} answered your question."
-            url = f""
+            user=question.patient,
+            message=f"Dr. {question.doctor.first_name} answered your question.",
+            link=f"/questions/{question.id}/"
         )
-        return redirect()
-    
 
+        messages.success(request, "Answer submitted successfully.")
+        return redirect('question_detail', pk=question.pk)
+
+    return render(request, 'temp/answer_question.html', {'question': question})
+
+
+@login_required
 def question_detail(request, pk):
-    try:
-        question=Question.objects.get(pk = pk)
-    except Question.DoesNotExist:
-        return render(request, 'parts1/404.html' , status=404)
-    
+    question = get_object_or_404(Question, pk=pk)
+
+    # إذا كان يوجد إشعار غير مقروء متعلق بهذا السؤال، نحدّثه
     Notification.objects.filter(user=request.user, link=f"/questions/{pk}/").update(is_read=True)
-    # حدد الإشعار كمقروء إذا فيه واحد مرتبط بهالسؤال
 
     return render(request, 'question_detail.html', {'question': question})
-

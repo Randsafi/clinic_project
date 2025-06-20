@@ -51,10 +51,8 @@
                             <div class="input-group-text" style="height:55px;"><i class="fa fa-calendar"></i></div>
                           </div>
                         </div>
-                      </div>
-                  
-                      <div class="col-12">{{ form.problem_description }}</div>
-                  
+                      </div>                  
+                      <div class="col-12">{{ form.problem_description }}</div>                  
                       <div class="col-12">
                         <button class="btn btn-primary w-100 py-3" type="submit">Book Appointment</button>
                       </div>
@@ -72,20 +70,64 @@
 {% block extra_js %}
 <script type="text/javascript">
 $(function () {
-    $('#datetimepicker').datetimepicker({
-        format: 'YYYY-MM-DD HH:mm',
-        icons: {
-            time: 'far fa-clock',
-            date: 'far fa-calendar-alt',
-            up: 'fas fa-arrow-up',
-            down: 'fas fa-arrow-down',
-            previous: 'fas fa-chevron-left',
-            next: 'fas fa-chevron-right',
-            today: 'far fa-calendar-check',
-            clear: 'far fa-trash-alt',
-            close: 'fas fa-times'
-        }
+    let bookedSlots = [];  // قائمة المواعيد المحجوزة بصيغة '2025-06-22 14:00'
+
+    function getDisabledHoursForDate(dateStr) {
+        const hours = [];
+
+        bookedSlots.forEach(slot => {
+            const [date, time] = slot.split(' ');
+            if (date === dateStr) {
+                const hour = parseInt(time.split(':')[0]);
+                if (!hours.includes(hour)) hours.push(hour);
+            }
+        });
+
+        return hours;
+    }
+
+    function setupDateTimePicker(disabledHours=[]) {
+        $('#datetimepicker').datetimepicker('destroy');  // إعادة تهيئة
+        $('#datetimepicker').datetimepicker({
+            format: 'YYYY-MM-DD HH:mm',
+            stepping: 60,
+            disabledHours: disabledHours,
+            icons: {
+                time: 'far fa-clock',
+                date: 'far fa-calendar-alt',
+                up: 'fas fa-arrow-up',
+                down: 'fas fa-arrow-down',
+                previous: 'fas fa-chevron-left',
+                next: 'fas fa-chevron-right',
+                today: 'far fa-calendar-check',
+                clear: 'far fa-trash-alt',
+                close: 'fas fa-times'
+            }
+        });
+
+        // لما المستخدم يغير التاريخ، نحدث الساعات المحجوزة لهذا اليوم
+        $('#datetimepicker').on('change.datetimepicker', function (e) {
+            const selectedDate = moment(e.date).format('YYYY-MM-DD');
+            const disabledHours = getDisabledHoursForDate(selectedDate);
+            setupDateTimePicker(disabledHours);
+        });
+    }
+
+    $('#id_doctor').change(function () {
+        const doctorId = $(this).val();
+        if (!doctorId) return;
+
+        fetch(`/appointments/booked/${doctorId}/`)
+            .then(response => response.json())
+            .then(data => {
+                bookedSlots = data;
+                setupDateTimePicker();
+            });
     });
+
+    // أول تحميل
+    setupDateTimePicker();
 });
 </script>
 {% endblock %}
+
