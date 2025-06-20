@@ -34,7 +34,7 @@
 
             <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.5s">
                 <div class="bg-light rounded h-100 d-flex align-items-center p-5">
-                        <form method="post" action="" class="w-100">
+                        <form method="POST" action="" class="w-100">
                             <h2 class="text-center mb-4"> ask your doctor </h2>
                             {% csrf_token %}
                             <div class="row g-3 justify-content-center">
@@ -43,7 +43,7 @@
                                 </div>
                             </div>
                             <div class="col-12 mt-3">
-                                <button class="btn btn-primary w-100 py-3" type="submit"> ask </button>
+                                <button class="btn btn-primary w-100 py-3" type="submit" name="ask_button"> ask </button>
                             </div>
                         </form> 
                 </div>
@@ -60,8 +60,75 @@
                 </div>
               </div>
             {% endfor %}
-
+        </div>
+        <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s">
+            <p class="d-inline-block border rounded-pill py-1 px-4">Ratings</p>
+            <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.5s">
+                <div class="bg-light rounded h-100 d-flex align-items-center p-5" style="width: 500px;">
+                    <form method="POST" action=""  class="w-100">
+                        {% csrf_token %}
+                        <div id="star-rating" style="font-size: 40px; cursor: pointer;">
+                          <!-- 5 نجمات -->
+                          {% for i in "12345" %}
+                            <span class="star" data-value="{{ forloop.counter }}">&#9734;</span>
+                          {% endfor %}
+                        </div>
+                    
+                        <div id="emoji" style="font-size: 50px; margin-top: 10px; user-select: none;">😐</div>
+                        <div class="col-12 col-sm-6">
+                            <input type="hidden" name="evaluation" id="evaluation" value="0">
+                        </div>
+                        <div class="col-12 col-sm-6" style="width: 100%;">
+                            <input type="text" name="comment" class="form-control border-0" placeholder="Write your opinion here..." required style="height: 55px;">
+                        </div>
+                         <div class="col-12">
+                            <button class="btn btn-primary w-100 py-3" type="submit" name="send_rating"> send </button>
+                         </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block style %}
+<style>
+  .star {
+    color: #ccc;
+    transition: color 0.2s;
+  }
+  .star.selected {
+    color: gold;
+  }
+</style>   
+{% endblock style %}
+{% block extra_js %}
+<script>
+    const stars = document.querySelectorAll('.star');
+  const ratingInput = document.getElementById('evaluation');
+  const emojiDiv = document.getElementById('emoji');
+
+  const emojis = {
+    1: '😡',  // غاضب
+    2: '😕',  // متردد
+    3: '😐',  // محايد
+    4: '🙂',  // سعيد
+    5: '😍'   // مبسوط جداً
+  };
+
+  stars.forEach((star, index) => {
+    star.addEventListener('click', () => {
+      const rating = index + 1;
+      ratingInput.value = rating;
+
+      stars.forEach(s => s.classList.remove('selected'));
+      for (let i = 0; i < rating; i++) {
+        stars[i].classList.add('selected');
+      }
+      
+      emojiDiv.textContent = emojis[rating];
+    });
+});
+</script>
 {% endblock %}

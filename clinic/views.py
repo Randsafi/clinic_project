@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.contrib import messages
 from .models import Appointment,Patient ,Doctor
 from .forms import AppointmentForm
+from Question.forms import QuestionForm
 from datetime import datetime,time,timedelta
 from django.utils import timezone
 
@@ -113,5 +114,5 @@ def booked_slots_json(request, doctor_id):
     return JsonResponse(data, safe=False)
 
 def service(request):
-    
-    return render(request,'temp/service.html')
+    form = QuestionForm()
+    return render(request,'temp/service.html',{'form' : form})

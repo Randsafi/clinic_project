@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth import get_user_model
 
 User = get_user_model()  
@@ -23,3 +24,11 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"To: {self.username} - {self.message}"
+
+class Opinions(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE, related_name='Opinions')
+    comment = models.TextField()
+    evaluation=models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+
+    def __str__(self):
+        return f"{self.user.username} - {self.evaluation} Stars"

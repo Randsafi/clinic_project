@@ -75,4 +75,4 @@ class MedicalReport(TimeStampeModel):
     appointment = models.ForeignKey('Appointment', on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
-        return f"تقرير طبي للمريض {self.patient} date {self.created_at.strftime('%Y-%m-%d')}"
+        return f"Patient's medical report{self.patient} date {self.created_at.strftime('%Y-%m-%d')}"
