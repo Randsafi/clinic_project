@@ -49,9 +49,8 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
-LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'index'   # الصفحة التي يُعاد توجيه المستخدم لها بعد تسجيل الدخول
-LOGOUT_REDIRECT_URL = 'login' # الصفحة التي يُعاد توجيه المستخدم لها بعد تسجيل الخروج
+LOGIN_REDIRECT_URL = 'index'
+LOGOUT_REDIRECT_URL = 'login' 
 handler404 = 'accounts.views.custom_404_view'
 
 REST_FRAMEWORK = {
@@ -90,8 +89,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-
                 'Question.context_processors.notifications_processor',
+                'Question.context_processors.doctor_chat_context',
                # 'Question.context_processors.site_info',
             ],
         },

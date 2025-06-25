@@ -1,9 +1,9 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404 
+from django.http import JsonResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from urllib.parse import quote
-
-from .forms import QuestionForm
+from .forms import QuestionForm,Question_chatForm
 from .models import Question, Notification, Opinions
 
 
@@ -52,34 +52,56 @@ def ask_doctor(request):
         'questions': questions
     })
 
+from django.utils import timezone
+from django.http import HttpResponseForbidden
+
 @login_required
 def answer_question(request, pk):
     question = get_object_or_404(Question, pk=pk)
 
+    if request.user != question.doctor:
+        return HttpResponseForbidden("You are not allowed to answer this question.")
+
     if request.method == 'POST':
         answer = request.POST.get('answer')
         question.answer_text = answer
+        question.answered_at = timezone.now()
         question.save()
 
-        # إنشاء إشعار للمريض
         Notification.objects.create(
             user=question.patient,
-            message=f"Dr. {question.doctor.first_name} answered your question.",
-            link=f"/questions/{question.id}/"
+            message=f"الدكتور {question.doctor.first_name} أجاب على سؤالك.",
+            url=f"/questions/{question.id}/"
         )
 
-        messages.success(request, "Answer submitted successfully.")
+        messages.success(request, "تم إرسال الإجابة بنجاح.")
         return redirect('question_detail', pk=question.pk)
 
     return render(request, 'temp/answer_question.html', {'question': question})
-
 
 @login_required
 def question_detail(request, pk):
     question = get_object_or_404(Question, pk=pk)
 
-    # إذا كان يوجد إشعار غير مقروء متعلق بهذا السؤال، نحدّثه
-    Notification.objects.filter(user=request.user, link=f"/questions/{pk}/").update(is_read=True)
+    # تحديث أي إشعار غير مقروء متعلق بهذا السؤال
+    Notification.objects.filter(user=request.user, url=f"/questions/{pk}/").update(is_read=True)
 
     return render(request, 'question_detail.html', {'question': question})
 
+from django.shortcuts import redirect
+
+@login_required 
+@login_required 
+def ask_doctor_chat(request):
+    if request.method == 'POST':
+        form = Question_chatForm(request.POST)
+        if form.is_valid():
+            question = form.save(commit=False)
+            question.patient = request.user
+            question.doctor = form.cleaned_data['doctor']
+            question.save()
+            messages.success(request, "✅ Your question has been sent to the doctor.")
+        else:
+            messages.error(request, "❌ The question was not submitted. Please ensure that all fields are completed.")
+
+    return redirect(request.META.get('HTTP_REFERER', 'index'))

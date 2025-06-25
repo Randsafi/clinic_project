@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
 <div class="container-xxl py-5">
     <div class="container">
@@ -103,32 +104,5 @@
   }
 </style>   
 {% endblock style %}
-{% block extra_js %}
-<script>
-    const stars = document.querySelectorAll('.star');
-  const ratingInput = document.getElementById('evaluation');
-  const emojiDiv = document.getElementById('emoji');
+<script src="{% static 'js/mii.js' %}"></script>
 
-  const emojis = {
-    1: '😡',  // غاضب
-    2: '😕',  // متردد
-    3: '😐',  // محايد
-    4: '🙂',  // سعيد
-    5: '😍'   // مبسوط جداً
-  };
-
-  stars.forEach((star, index) => {
-    star.addEventListener('click', () => {
-      const rating = index + 1;
-      ratingInput.value = rating;
-
-      stars.forEach(s => s.classList.remove('selected'));
-      for (let i = 0; i < rating; i++) {
-        stars[i].classList.add('selected');
-      }
-      
-      emojiDiv.textContent = emojis[rating];
-    });
-});
-</script>
-{% endblock %}

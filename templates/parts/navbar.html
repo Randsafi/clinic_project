@@ -38,7 +38,7 @@
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notifDropdown">
                         {% if notifications %}
                             {% for noti in notifications %}
-                                <li><a class="dropdown-item" href="{{ noti.link }}">{{ noti.message }}</a></li>
+                                <li><a class="dropdown-item" href="{{ noti.url }}">{{ noti.message }}</a></li>
                             {% endfor %}
                         {% else %}
                             <li><span class="dropdown-item text-muted">No new notifications</span></li>

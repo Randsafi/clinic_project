@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from .forms import CustomUserCreationForm
 from django.contrib.auth import login
 from .forms import DoctorForm,PatientForm
@@ -21,15 +21,15 @@ def register(request):
         form = CustomUserCreationForm()
     return render(request, 'accounts/register.html' , {'form':form})
 
-def register2(request,user_type):
+def register2(request, user_type):
     user_id = request.session.get("partial_user_id")
     if not user_id:
         return redirect('register')
-    
-    user = User.objects.get(id = user_id)
+
+    user = get_object_or_404(User, id=user_id)
 
     if request.method == 'POST':
-        if user_type == 'doctor' :
+        if user_type == 'doctor':
             form = DoctorForm(request.POST)
             if form.is_valid():
                 doctor = form.save(commit=False)
@@ -37,8 +37,7 @@ def register2(request,user_type):
                 doctor.save()
                 login(request, user)
                 return redirect('index')
-                
-        elif user_type == "patient":
+        elif user_type == 'patient':
             form = PatientForm(request.POST)
             if form.is_valid():
                 patient = form.save(commit=False)
@@ -48,8 +47,7 @@ def register2(request,user_type):
                 return redirect('index')
         else:
             return redirect('index')
-            
     else:
-        form = DoctorForm() if user_type == 'doctor' else PatientForm()       
+        form = DoctorForm() if user_type == 'doctor' else PatientForm()
 
-    return render(request , 'accounts/register2.html' , {'form' :form , 'user_type': user_type})
+    return render(request, 'accounts/register2.html', {'form': form, 'user_type': user_type})
