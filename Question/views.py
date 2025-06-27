@@ -1,15 +1,18 @@
 from django.shortcuts import render, redirect, get_object_or_404 
 from django.http import JsonResponse
+from django.utils import timezone
+from django.http import HttpResponseForbidden
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from urllib.parse import quote
-from .forms import QuestionForm,Question_chatForm
+from .forms import QuestionForm,Question_chatForm,Answer_chatForm
 from .models import Question, Notification, Opinions
+
 
 
 @login_required
 def ask_doctor(request):
-    questions = Question.objects.all()
+    questions = Question.objects.filter(patient=request.user)
     form = QuestionForm()  # تعيين مبدئي دائم
 
     if request.method == 'POST':
@@ -21,6 +24,14 @@ def ask_doctor(request):
                 question.save()
 
                 doctor = question.doctor
+
+                # 🔔 إشعار داخلي للدكتور
+                Notification.objects.create(
+                    user=doctor,
+                    message=f"🆕 the patient {request.user.username} I sent you a question.",
+                    url=f"/questions/{question.id}/"
+                )
+
                 if hasattr(doctor, 'phone') and doctor.phone:
                     message = f"New question from {request.user.username}:\n\n{question.question_text}"
                     encoded_message = quote(message)
@@ -52,8 +63,6 @@ def ask_doctor(request):
         'questions': questions
     })
 
-from django.utils import timezone
-from django.http import HttpResponseForbidden
 
 @login_required
 def answer_question(request, pk):
@@ -70,11 +79,11 @@ def answer_question(request, pk):
 
         Notification.objects.create(
             user=question.patient,
-            message=f"الدكتور {question.doctor.first_name} أجاب على سؤالك.",
+            message=f" the doctor {question.doctor.first_name} Answered your question.",
             url=f"/questions/{question.id}/"
         )
 
-        messages.success(request, "تم إرسال الإجابة بنجاح.")
+        messages.success(request, "The answer has been sent successfully.")
         return redirect('question_detail', pk=question.pk)
 
     return render(request, 'temp/answer_question.html', {'question': question})
@@ -91,17 +100,50 @@ def question_detail(request, pk):
 from django.shortcuts import redirect
 
 @login_required 
-@login_required 
 def ask_doctor_chat(request):
+    questions = Question.objects.filter(patient=request.user).order_by('timestamp')
+    form = Question_chatForm()
+
     if request.method == 'POST':
         form = Question_chatForm(request.POST)
         if form.is_valid():
             question = form.save(commit=False)
             question.patient = request.user
-            question.doctor = form.cleaned_data['doctor']
             question.save()
-            messages.success(request, "✅ Your question has been sent to the doctor.")
-        else:
-            messages.error(request, "❌ The question was not submitted. Please ensure that all fields are completed.")
+            doctor = question.doctor
 
-    return redirect(request.META.get('HTTP_REFERER', 'index'))
+            # 🔔 إشعار داخلي للدكتور
+            Notification.objects.create(
+                user=doctor,
+                message=f"🆕 the patient {request.user.username} I sent you a question.",
+                url=f"/questions/{question.id}/"
+            )
+            return redirect('/')  # غيّر الاسم حسب ما سمّيت الـ url
+
+    return render(request, 'base.html', {
+        'form': form,
+        'questions': questions,
+    })
+
+@login_required
+def answer_question_chat(request, pk):
+    question = get_object_or_404(Question, pk=pk, doctor=request.user)
+
+    if request.method == 'POST':
+        form = Answer_chatForm(request.POST, instance=question)
+        if form.is_valid():
+            q = form.save(commit=False)
+            q.answered_at = timezone.now()
+            q.save()
+            Notification.objects.create(
+                    user=question.patient,
+                    message=f" the doctor {question.doctor.first_name} Answered your question.",
+                    url=f"/questions/{question.id}/"
+                )
+            return redirect('/')  # صفحة الأسئلة الواردة للدكتور
+    else:
+        form = Answer_chatForm(instance=question)
+
+    return render(request, 'base.html', {'form': form, 'question': question})
+
+

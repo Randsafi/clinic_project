@@ -13,7 +13,6 @@ class QuestionForm(forms.ModelForm):
             
         }
 
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['doctor'].queryset = User.objects.filter(user_type='doctor')  
@@ -38,3 +37,18 @@ class Question_chatForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['doctor'].queryset = User.objects.filter(user_type='doctor')
 
+class Answer_chatForm(forms.ModelForm):
+    class Meta:
+        model = Question
+        fields = ['answer_text']
+        widgets = {
+            'answer_text': forms.Textarea(attrs={
+                'class': 'form-control rounded',
+                'rows': 3,
+                'placeholder': 'add your answer...'
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        #self.fields['doctor'].queryset = User.objects.filter(user_type='doctor')

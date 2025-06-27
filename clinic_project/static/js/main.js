@@ -92,6 +92,16 @@
         }
     });
 
+     // إخفاء رسائل الفلاش بعد 10 ثواني
+      setTimeout(function () {
+        document.querySelectorAll('.flash-message').forEach(alert => {
+          alert.classList.remove('show');
+          alert.classList.add('fade');
+          setTimeout(() => alert.remove(), 500);
+        });
+      }, 10000);
+
+      
     
 })(jQuery);
 

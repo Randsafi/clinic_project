@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block content %}
 <!-- Appointment Start -->
 <div class="container-xxl py-5">
@@ -68,6 +68,6 @@
 
 <!-- سكربت التاريخ والوقت -->
 {% block extra_js %}
-<script type="text/javascript" src="js/mii.js"></script>
+<script type="text/javascript" src="{% static 'js/mii.js' %}"></script>
 {% endblock %}
 

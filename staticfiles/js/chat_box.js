@@ -1,60 +1,35 @@
-document.addEventListener('DOMContentLoaded', function() {
-  // وظيفة لجلب قيمة CSRF من الكوكيز
-  function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== "") {
-      const cookies = document.cookie.split(";");
-      for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-        if (cookie.substring(0, name.length + 1) === name + "=") {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-          break;
-        }
-      }
+  document.addEventListener('DOMContentLoaded', function () {
+    // ==== مريض ====
+    const patientBox = document.getElementById('patient-chat-box');
+    const patientToggle = document.getElementById('patient-chat-toggle');
+    const patientClose = patientBox?.querySelector('#chat-close');
+
+    if (patientToggle && patientBox) {
+      patientToggle.addEventListener('click', () => {
+        patientBox.classList.toggle('d-none');
+      });
     }
-    return cookieValue;
-  }
 
-  const csrftoken = getCookie("csrftoken");
+    if (patientClose && patientBox) {
+      patientClose.addEventListener('click', () => {
+        patientBox.classList.add('d-none');
+      });
+    }
 
-  const chatBox = document.getElementById('chat-box');
-  const toggleBtn = document.getElementById('chat-toggle');
-  const closeBtn = document.getElementById('chat-close');
+    // ==== دكتور ====
+    const doctorBox = document.getElementById('doctor-chat-box');
+    const doctorToggle = document.getElementById('doctor-chat-toggle');
+    const doctorClose = doctorBox?.querySelector('#chat-close');
 
-  toggleBtn.addEventListener('click', () => {
-    chatBox.classList.toggle('d-none');
+    if (doctorToggle && doctorBox) {
+      doctorToggle.addEventListener('click', () => {
+        doctorBox.classList.toggle('d-none');
+      });
+    }
+
+    if (doctorClose && doctorBox) {
+      doctorClose.addEventListener('click', () => {
+        doctorBox.classList.add('d-none');
+      });
+    }
   });
-
-  closeBtn.addEventListener('click', () => {
-    chatBox.classList.add('d-none');
-  });
-
-  document.getElementById('chat-form').addEventListener('submit', function (e) {
-    e.preventDefault();
-
-    const form = e.target;
-    const formData = new FormData(form);
-    const questionInput = form.querySelector('input[name="question_text"], textarea[name="question_text"]');
-    const questionText = questionInput.value;
-    const doctorSelect = document.getElementById('doctor');
-
-    formData.set('doctor', doctorSelect.value);  // Set doctor manually
-
-    fetch("{% url 'ask_doctor_chat' %}", {
-      method: "POST",
-      headers: { "X-CSRFToken": form.querySelector('[name=csrfmiddlewaretoken]').value },
-      body: formData
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) {
-        const msgContainer = document.querySelector('.chat-messages');
-        const msg = document.createElement('div');
-        msg.className = 'mb-2 p-2 border rounded';
-        msg.innerHTML = `<p><strong>🧑‍🦰 You:</strong> ${questionText}</p><p class="text-warning mb-0">⏳ Waiting for reply...</p>`;
-        msgContainer.prepend(msg);
-        questionInput.value = '';
-      }
-    });
-  });
-});

@@ -91,7 +91,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'Question.context_processors.notifications_processor',
                 'Question.context_processors.doctor_chat_context',
-               # 'Question.context_processors.site_info',
+                'Question.context_processors.ansewr_doctor',
             ],
         },
     },
