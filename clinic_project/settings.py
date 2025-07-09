@@ -38,14 +38,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
     'accounts',
     'clinic', 
     'Question',
+    'teste',
     'rest_framework',  
     'api_app',
-    'teste',
     'corsheaders',
 ]
+
+ASGI_APPLICATION = 'clinic_project.asgi.application'
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
@@ -90,8 +93,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'Question.context_processors.notifications_processor',
+                'Question.context_processors.patient_chat_context',
                 'Question.context_processors.doctor_chat_context',
-                'Question.context_processors.ansewr_doctor',
             ],
         },
     },
@@ -103,11 +106,19 @@ WSGI_APPLICATION = 'clinic_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
+DATABASES = {   
     'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'my_django_db',        # اسم قاعدة البيانات
+        'USER': 'RandSafi',               # اسم المستخدم (غالباً root)
+        'PASSWORD': 'Rs80750497@',   # كلمة السر
+        'HOST': 'localhost',           # أو عنوان IP إذا كان على خادم بعيد
+        'PORT': '3306',                # البورت الافتراضي لـ MySQL
+    },
+    'sqlite_db': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'NAME': BASE_DIR / 'secondary_db.sqlite3',
+    },
 }
 
 
@@ -158,3 +169,12 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',  # للتجربة فقط - للإنتاج استخدمي Redis
+    },
+}
+
+

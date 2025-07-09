@@ -1,8 +1,8 @@
 from django.shortcuts import get_object_or_404
 from .models import Notification, Question
-from clinic.models import Doctor,Patient
-from .forms import Question_chatForm,Answer_chatForm
+from .forms import Question_chatForm, Answer_chatForm
 
+# إشعارات المستخدم (تُستخدم في كل الصفحات)
 def notifications_processor(request):
     if request.user.is_authenticated:
         notifications = request.user.notifications.filter(is_read=False)
@@ -15,9 +15,8 @@ def notifications_processor(request):
         'notifications_count': 0
     }
 
-# context_processors.py
-
-def doctor_chat_context(request):
+# فقاعة الشات الخاصة بالمريض
+def patient_chat_context(request):
     if request.user.is_authenticated and request.user.user_type == 'patient':
         form = Question_chatForm()
         questions = Question.objects.filter(patient=request.user).order_by('-id')[:10]
@@ -30,14 +29,16 @@ def doctor_chat_context(request):
         'chat_questions': questions,
     }
 
-def ansewr_doctor(request):
+# فقاعة الشات الخاصة بالطبيب
+def doctor_chat_context(request):
     if request.user.is_authenticated and request.user.user_type == 'doctor':
         form = Answer_chatForm()
-        ansewrs = Question.objects.filter(doctor=request.user).order_by('-id')[:10]
+        answers = Question.objects.filter(doctor=request.user).order_by('-id')[:10]
     else:
         form = None
-        ansewrs = []
+        answers = []
+
     return {
         'doctor_chat_form': form,
-        'chat_ansewrs':ansewrs
+        'chat_answers': answers
     }

@@ -1,0 +1,191 @@
+{% comment %}
+    This file handles both patient and doctor chat bubbles with WebSocket integration
+{% endcomment %}
+
+{% if user.is_authenticated %}
+  {% if patient_chat_form %}
+    <!-- Patient Chat Button -->
+    <button id="patient-chat-toggle" class="btn btn-primary rounded-pill position-fixed" style="bottom: 90px; right: 25px; z-index: 999;">
+      💬 Ask Doctor
+    </button>
+
+    <!-- Patient Chat Box -->
+    <div id="patient-chat-box" class="chat-box d-none shadow position-fixed bg-white p-3 rounded" style="bottom: 0; right: 0; width: 335px; max-height: 500px; overflow-y: auto; z-index: 1000;">
+      <div class="chat-header d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+        <span class="fw-bold text-primary">💬 Ask Doctor</span>
+        <button type="button" id="patient-chat-close" class="btn btn-sm btn-light border rounded-circle">&times;</button>
+      </div>
+      <div class="chat-messages mt-2" id="chat-messages">
+        {% for q in chat_questions %}
+          <div class="mb-2 p-2 border rounded">
+            <p><strong>🧑‍🦰 You:</strong> {{ q.question_text }}</p>
+            {% if q.answer_text %}
+              <p class="text-success"><strong>👨‍⚕️ Doctor:</strong> {{ q.answer_text }}</p>
+            {% else %}
+              <p class="text-warning mb-0">⏳ Waiting for reply...</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+      <hr>
+      <form id="chat-form" method="post" action="">
+        {% csrf_token %}
+        {{ patient_chat_form.doctor }}
+        {{ patient_chat_form.question_text }}
+        <button type="submit" class="btn btn-primary mt-2">Send</button>
+      </form>
+    </div>
+  {% endif %}
+
+  {% if request.user.user_type == 'doctor' and doctor_chat_form %}
+    <!-- Doctor Chat Button -->
+    <button id="doctor-chat-toggle" class="btn btn-success rounded-pill position-fixed" style="bottom: 90px; right: 25px; z-index: 999;">
+      📩 Doctor Inbox
+    </button>
+
+    <!-- Doctor Chat Box -->
+    <div id="doctor-chat-box" class="chat-box d-none shadow position-fixed bg-white p-3 rounded" style="bottom: 0; right: 0; width: 335px; max-height: 500px; overflow-y: auto; z-index: 1000;">
+      <div class="chat-header d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+        <span class="fw-bold text-success">📩 Doctor Inbox</span>
+        <button type="button" id="doctor-chat-close" class="btn btn-sm btn-light border rounded-circle">&times;</button>
+      </div>
+      <div class="chat-messages mt-2" id="doctor-chat-messages">
+        {% for q in chat_answers %}
+          <div class="mb-3 p-2 border rounded" data-question-id="{{ q.id }}">
+            <p><strong>🧑‍🦰 {{ q.patient.get_full_name|default:q.patient.username }}:</strong> {{ q.question_text }}</p>
+            {% if q.answer_text %}
+              <p class="text-success mb-0"><strong>👨‍⚕️ You:</strong> {{ q.answer_text }}</p>
+            {% else %}
+              <form method="post" action="{% url 'answer_question_chat' pk=q.id %}" class="answer-form">
+                {% csrf_token %}
+                <textarea name="answer_text" class="form-control mb-2" rows="2" placeholder="Write your reply..."></textarea>
+                <button type="submit" class="btn btn-sm btn-primary">Reply</button>
+              </form>
+            {% endif %}
+          </div>
+        {% empty %}
+          <p class="text-muted">No questions yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const socket = new WebSocket('ws://' + window.location.host + '/ws/notifications/');
+
+    socket.onmessage = function(e) {
+      const data = JSON.parse(e.data);
+      console.log("WS message received:", data);  // راح يساعدك تتابع الرسائل بالكونسول
+
+      // إذا الرسالة تحتوي على نص وإسم المرسل، يعني رسالة جواب أو سؤال جديدة
+      if (data.text && data.sender) {
+        const msg = document.createElement('div');
+        msg.className = 'mb-2 p-2 border rounded';
+        msg.innerHTML = `<p><strong>👤 ${data.sender}:</strong> ${data.text}</p><small class="text-muted">${data.timestamp}</small>`;
+
+        // العنصر الذي يعرض رسائل الطبيب
+        const doctorChatMessages = document.getElementById('doctor-chat-messages');
+        // العنصر الذي يعرض رسائل المريض
+        const patientChatMessages = document.getElementById('chat-messages');
+
+        if (doctorChatMessages) {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'mb-3 p-2 border rounded';
+          wrapper.innerHTML = `
+            <p><strong>🧑‍🦰 ${data.sender}:</strong> ${data.text}</p>
+            <form method="post" action="chat/answer/${data.qestion.id}/" class="answer-form">
+              <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+              <textarea name="answer_text" class="form-control mb-2" rows="2" placeholder="Write your reply..."></textarea>
+              <button type="submit" class="btn btn-sm btn-primary">Reply</button>
+            </form>
+          `;
+          doctorChatMessages.appendChild(wrapper);
+          doctorChatMessages.scrollTop = doctorChatMessages.scrollHeight;
+        }
+
+        if (patientChatMessages) {
+          patientChatMessages.appendChild(msg);
+          patientChatMessages.scrollTop = patientChatMessages.scrollHeight; // نزّل التمرير لآخر رسالة
+        }
+
+      // إذا الرسالة عامة أو إشعار فقط
+      } else if (data.message) {
+        alert("🔔 " + data.message);
+      }
+    };
+
+    // مريض: إرسال سؤال
+    const chatForm = document.getElementById('chat-form');
+    if(chatForm) {
+      chatForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+
+        fetch("{% url 'ask_doctor_chat' %}", {
+          method: 'POST',
+          headers: {'X-CSRFToken': '{{ csrf_token }}'},
+          body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            const chatMessages = document.getElementById('chat-messages');
+            const msg = document.createElement('div');
+            msg.className = 'mb-2 p-2 border rounded';
+            msg.innerHTML = `<p><strong>🧑‍🦰 You:</strong> ${data.question_text}</p><p class="text-warning mb-0">⏳ Waiting for reply...</p>`;
+            chatMessages.appendChild(msg);
+            chatMessages.scrollTop = chatMessages.scrollHeight; // نزّل التمرير لآخر رسالة
+            this.reset();
+          } else {
+            alert('Error: ' + JSON.stringify(data.errors));
+          }
+        });
+      });
+    }
+
+    // طبيب: إرسال الرد
+    document.querySelectorAll('.answer-form').forEach(form => {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const action = this.getAttribute('action');
+        const formData = new FormData(this);
+
+        fetch(action, {
+          method: 'POST',
+          headers: {'X-CSRFToken': '{{ csrf_token }}'},
+          body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            const container = this.closest('[data-question-id]');
+            this.remove();
+            const answerEl = document.createElement('p');
+            answerEl.className = 'text-success mb-0';
+            answerEl.innerHTML = `<strong>👨‍⚕️ You:</strong> ${data.answer_text}`;
+            container.appendChild(answerEl);
+          } else {
+            alert('Error: ' + JSON.stringify(data.errors));
+          }
+        });
+      });
+    });
+
+    // التحكم بفتح وإغلاق فقاعة الشات
+    const toggle = (btnId, boxId, closeId) => {
+      const btn = document.getElementById(btnId);
+      const box = document.getElementById(boxId);
+      const close = document.getElementById(closeId);
+
+      if (btn && box) btn.addEventListener('click', () => box.classList.toggle('d-none'));
+      if (close && box) close.addEventListener('click', () => box.classList.add('d-none'));
+    };
+
+    toggle('patient-chat-toggle', 'patient-chat-box', 'patient-chat-close');
+    toggle('doctor-chat-toggle', 'doctor-chat-box', 'doctor-chat-close');
+  });
+</script>
+
+{% endif %}

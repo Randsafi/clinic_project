@@ -27,24 +27,6 @@
         <!-- Notifications & Auth -->
         <ul class="navbar-nav px-4">
             {% if user.is_authenticated %}
-                <!-- Notifications Dropdown -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-bell"></i>
-                        {% if notifications_count > 0 %}
-                            <span class="badge bg-danger">{{ notifications_count }}</span>
-                        {% endif %}
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notifDropdown">
-                        {% if notifications %}
-                            {% for noti in notifications %}
-                                <li><a class="dropdown-item" href="{{ noti.url }}">{{ noti.message }}</a></li>
-                            {% endfor %}
-                        {% else %}
-                            <li><span class="dropdown-item text-muted">No new notifications {{user.username}}</span></li>
-                        {% endif %}
-                    </ul>
-                </li>
 
                 <!-- Logout Button -->
                 <li class="nav-item">
